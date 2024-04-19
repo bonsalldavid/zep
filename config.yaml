@@ -61,7 +61,7 @@ server:
   # Is the Web UI enabled?
   # Warning: The Web UI is not secured by authentication and should not be enabled if
   # Zep is exposed to the public internet.
-  web_enabled: true
+  web_enabled: false
   # The maximum size of a request body, in bytes. Defaults to 5MB.
   max_request_size: 5242880
 auth:
