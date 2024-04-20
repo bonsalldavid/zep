@@ -37,7 +37,7 @@ services:
     ports:
       - "5557:5557"
   zep:
-    image: ghcr.io/getzep/zep:latest
+    image: db402/zep-custom:latest
     container_name: zep
     restart: on-failure
     depends_on:
