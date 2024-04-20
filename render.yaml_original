@@ -4,15 +4,15 @@ services:
     autoDeploy: false
     env: image
     image:
-      url: db402/zep-custom:latest  # Changed to your custom Docker image URL
+      url: ghcr.io/getzep/zep-cloud:latest
     healthCheckPath: /healthz
     envVars:
       # Disable web UI. WARNING: Do not enable this unless
       # you are running Zep on a private network.
       - key: ZEP_SERVER_WEB_ENABLED
-        value: "false"
+        value: false
       - key: PORT
-        value: "8000"
+        value: 8000
       - key: ZEP_STORE_POSTGRES_DSN
         fromDatabase:
           name: zep-postgres
@@ -29,10 +29,10 @@ services:
     autoDeploy: false
     env: image
     image:
-      url: db402/zep-nlp-custom:latest  # Assuming you have a custom NLP server image
+      url: ghcr.io/getzep/zep-nlp-server:latest
 
 databases:
   - name: zep-postgres
     databaseName: zep
     postgresMajorVersion: 15
-    ipAllowList: []  # Only allow internal connections
+    ipAllowList: [] # only allow internal connections
