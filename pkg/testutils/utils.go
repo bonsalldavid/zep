@@ -1,5 +1,3 @@
-//go:build testutils
-
 package testutils
 
 import (
@@ -26,7 +24,7 @@ func testConfigDefaults() (*config.Config, error) {
 	testConfig := &config.Config{
 		LLM: config.LLM{
 			Service: "openai",
-			Model:   "gpt-3.5-turbo-1106",
+			Model:   "gpt-4o-mini",
 		},
 		NLP: config.NLP{
 			ServerURL: "http://localhost:5557",
