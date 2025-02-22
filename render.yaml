@@ -38,7 +38,7 @@ services:
         sync: false
 
       - key: GRAPHITI_HOST
-          value: graphiti
+        value: graphiti
 
       - key: GRAPHITI_PORT
         value: "8003"
