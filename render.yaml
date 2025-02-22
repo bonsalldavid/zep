@@ -11,25 +11,66 @@ services:
         value: "8000"
       - key: ZEP_SERVER_WEB_ENABLED
         value: "false"
-      # The following variables must be set in Render’s dashboard (secret management)
+      # These sensitive variables must be set in Render’s dashboard (using secret management)
       - key: POSTGRES_USER
         sync: false
       - key: POSTGRES_PASSWORD
         sync: false
+      # For internal connectivity, set POSTGRES_HOST to "db"
       - key: POSTGRES_HOST
-        sync: false
+        value: "db"
       - key: POSTGRES_PORT
-        sync: false
+        value: "5432"
       - key: POSTGRES_DATABASE
         sync: false
       - key: ZEP_API_SECRET
         sync: false
       - key: ZEP_OPENAI_API_KEY
         sync: false
+
+  - type: pserv
+    name: db
+    autoDeploy: false
+    env: image
+    image:
+      url: ankane/pgvector:v0.5.1
+    envVars:
+      # Use the same database credentials for the db service
+      - key: POSTGRES_USER
+        sync: false
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: POSTGRES_DATABASE
+        sync: false
+    # (Note: db is a private service; no health check path is allowed)
+
   - type: pserv
     name: graphiti
     autoDeploy: false
     env: image
     image:
       url: zepai/graphiti:0.3
-    healthCheckPath: /healthcheck
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: MODEL_NAME
+        value: "gpt-4o-mini"
+      - key: NEO4J_URI
+        # This will resolve to the neo4j service on the same network.
+        value: "bolt://neo4j:7687"
+      - key: NEO4J_USER
+        sync: false
+      - key: NEO4J_PASSWORD
+        sync: false
+      - key: PORT
+        value: "8003"
+
+  - type: pserv
+    name: neo4j
+    autoDeploy: false
+    env: image
+    image:
+      url: neo4j:5.22.0
+    envVars:
+      - key: NEO4J_AUTH
+        sync: false
