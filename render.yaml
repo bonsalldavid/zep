@@ -6,39 +6,38 @@ services:
     env: docker
     image:
       url: db402/zep-custom:latest
-    plan: free              # or "starter"/"standard", etc.
+    plan: free             # Adjust plan as needed
     autoDeploy: false
     healthCheckPath: /healthz
     envVars:
-      # These can be replaced by direct references or removed if you supply them in the dashboard
       - key: POSTGRES_HOST
-        value: ""
+        sync: false
       - key: POSTGRES_DATABASE
-        value: ""
+        sync: false
       - key: POSTGRES_USER
-        value: ""
+        sync: false
       - key: POSTGRES_PASSWORD
-        value: ""
+        sync: false
       - key: POSTGRES_PORT
         value: "5432"
 
-      # Example placeholders for any app config
+      # Zep application config
       - key: ZEP_API_SECRET
-        value: ""
+        sync: false
       - key: ZEP_OPENAI_API_KEY
-        value: ""
+        sync: false
       - key: ZEP_SERVER_WEB_ENABLED
-        value: "true"
+        sync: false
 
-      # Graphiti / Neo4j internal references (override if needed)
+      # Internal service references
       - key: GRAPHITI_HOST
-        value: "graphiti"
+        sync: false
       - key: GRAPHITI_PORT
-        value: "8003"
+        value: 8003
       - key: NEO4J_HOST
-        value: "neo4j"
+        sync: false
       - key: NEO4J_PORT
-        value: "7687"
+        value: 7687
 
   # 2) Graphiti Private Service
   - name: graphiti
@@ -48,17 +47,16 @@ services:
       url: zepai/graphiti:0.3
     plan: free
     autoDeploy: false
-    ports:
-      - containerPort: 8003
+    # Remove "ports" field; the container’s internal port (8003) is used for internal communication.
     envVars:
       - key: OPENAI_API_KEY
-        value: ""
+        sync: false
       - key: MODEL_NAME
         value: "gpt-4o-mini"
       - key: NEO4J_HOST
-        value: "neo4j"
+        sync: false
       - key: NEO4J_PORT
-        value: "7687"
+        value: 7687
 
   # 3) Neo4j Private Service
   - name: neo4j
@@ -68,12 +66,10 @@ services:
       url: neo4j:5.22.0
     plan: free
     autoDeploy: false
-    ports:
-      - containerPort: 7474
-      - containerPort: 7687
+    # Remove "ports" field; internal connectivity will use the container’s native ports.
     envVars:
       - key: NEO4J_AUTH
-        value: "neo4j/zepzepzep"
+        sync: false
 
 databases:
   # 4) Managed PostgreSQL Database
