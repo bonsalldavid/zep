@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: zep
+    autoDeploy: false
+    env: image
+    image:
+      url: db402/zep-custom:latest
+    healthCheckPath: /healthz
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: ZEP_SERVER_WEB_ENABLED
+        value: "false"
+      # The following variables must be set in Render’s dashboard (secret management)
+      - key: POSTGRES_USER
+        sync: false
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: POSTGRES_HOST
+        sync: false
+      - key: POSTGRES_PORT
+        sync: false
+      - key: POSTGRES_DATABASE
+        sync: false
+      - key: ZEP_API_SECRET
+        sync: false
+      - key: ZEP_OPENAI_API_KEY
+        sync: false
+  - type: pserv
+    name: graphiti
+    autoDeploy: false
+    env: image
+    image:
+      url: zepai/graphiti:0.3
+    healthCheckPath: /healthcheck
