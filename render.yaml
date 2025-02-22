@@ -6,10 +6,11 @@ services:
     env: docker
     image:
       url: db402/zep-custom:latest
-    plan: free             # Adjust plan as needed
+    plan: free              # or "starter"/"standard", etc.
     autoDeploy: false
     healthCheckPath: /healthz
     envVars:
+      # These can be replaced by direct references or removed if you supply them in the dashboard
       - key: POSTGRES_HOST
         value: ""
       - key: POSTGRES_DATABASE
@@ -21,7 +22,7 @@ services:
       - key: POSTGRES_PORT
         value: "5432"
 
-      # Zep application config
+      # Example placeholders for any app config
       - key: ZEP_API_SECRET
         value: ""
       - key: ZEP_OPENAI_API_KEY
@@ -29,7 +30,7 @@ services:
       - key: ZEP_SERVER_WEB_ENABLED
         value: "true"
 
-      # Internal service references
+      # Graphiti / Neo4j internal references (override if needed)
       - key: GRAPHITI_HOST
         value: "graphiti"
       - key: GRAPHITI_PORT
@@ -41,13 +42,14 @@ services:
 
   # 2) Graphiti Private Service
   - name: graphiti
-    type: pserv
+    type: privateService
     env: docker
     image:
       url: zepai/graphiti:0.3
     plan: free
     autoDeploy: false
-    # Remove "ports" field; the container’s internal port (8003) is used for internal communication.
+    ports:
+      - containerPort: 8003
     envVars:
       - key: OPENAI_API_KEY
         value: ""
@@ -60,13 +62,15 @@ services:
 
   # 3) Neo4j Private Service
   - name: neo4j
-    type: pserv
+    type: privateService
     env: docker
     image:
       url: neo4j:5.22.0
     plan: free
     autoDeploy: false
-    # Remove "ports" field; internal connectivity will use the container’s native ports.
+    ports:
+      - containerPort: 7474
+      - containerPort: 7687
     envVars:
       - key: NEO4J_AUTH
         value: "neo4j/zepzepzep"
