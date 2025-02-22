@@ -1,14 +1,17 @@
+# render.yaml
 services:
-  # 1) Zep Public Web Service (built from your Dockerfile)
+  # 1) Zep Public Web Service (built from your custom Docker image)
   - name: zep
     type: web
+    env: docker
+    # If you rely on the Dockerfile's ENTRYPOINT, you generally don't need a separate startCommand.
     image:
       url: db402/zep-custom:latest
+    plan: free  # or starter, or whatever tier you need
     autoDeploy: false
     healthCheckPath: /healthz
     envVars:
-      - key: ZEP_CONFIG_FILE
-        value: zep.yaml
+      # Map environment variables from your Managed PostgreSQL instance
       - key: POSTGRES_HOST
         fromDatabase:
           name: zep-postgres
@@ -27,6 +30,7 @@ services:
           property: password
       - key: POSTGRES_PORT
         value: "5432"
+      # Sync false for secrets you don’t want in Render’s UI logs
       - key: ZEP_API_SECRET
         sync: false
         value: "blahblahblah"
@@ -35,23 +39,26 @@ services:
         value: "sk-XXXX"
       - key: ZEP_SERVER_WEB_ENABLED
         value: "true"
-      # Internal endpoints for Graphiti and Neo4j
+      # Additional environment variables your application might use
       - key: GRAPHITI_HOST
-        value: graphiti
+        value: "graphiti"     # references the private service name
       - key: GRAPHITI_PORT
         value: "8003"
       - key: NEO4J_HOST
-        value: neo4j
+        value: "neo4j"
       - key: NEO4J_PORT
         value: "7687"
 
   # 2) Graphiti Private Service
   - name: graphiti
     type: pserv
-    env: image
-    autoDeploy: false
+    env: docker
     image:
       url: zepai/graphiti:0.3
+    plan: free
+    autoDeploy: false
+    # If Graphiti has a simple GET-based health check, specify it here:
+    #   healthCheckPath: /healthcheck
     ports:
       - 8003
     envVars:
@@ -61,24 +68,28 @@ services:
       - key: MODEL_NAME
         value: "gpt-4o-mini"
       - key: NEO4J_HOST
-        value: neo4j
+        value: "neo4j"
       - key: NEO4J_PORT
         value: "7687"
 
   # 3) Neo4j Private Service
   - name: neo4j
     type: pserv
-    env: image
-    autoDeploy: false
+    env: docker
     image:
       url: neo4j:5.22.0
+    plan: free
+    autoDeploy: false
+    ports:
+      - 7474
+      - 7687
+    # If you want a built-in health check, you can do:
+    # healthCheckPath: /  (only if the container responds on HTTP)
+    # Or override with a custom script or approach
     envVars:
       - key: NEO4J_AUTH
         sync: false
         value: "neo4j/zepzepzep"
-    ports:
-      - 7474
-      - 7687
 
 databases:
   # 4) Managed PostgreSQL Database
