@@ -13,17 +13,24 @@ echo "------------------------------------------"
 
 if [ -f /app/zep.yaml ]; then
     echo "Processing /app/zep.yaml with envsubst..."
-    envsubst '$POSTGRES_USER $POSTGRES_PASSWORD $POSTGRES_HOST $POSTGRES_PORT $POSTGRES_DATABASE $ZEP_API_SECRET $ZEP_SERVER_WEB_ENABLED $ZEP_OPENAI_API_KEY' < /app/zep.yaml > /app/config.yaml
+
+#    # 1) Move the original zep.yaml to a temp file
+#    mv /app/zep.yaml /app/zep.yaml.template
+
+    # 2) Perform env substitution on the template
+    envsubst '$POSTGRES_USER $POSTGRES_PASSWORD $POSTGRES_HOST $POSTGRES_PORT $POSTGRES_DATABASE $ZEP_API_SECRET $ZEP_SERVER_WEB_ENABLED $ZEP_OPENAI_API_KEY' \
+      < /app/zep.yaml > /app/zep.yaml.tmp
+    mv /app/zep.yaml.tmp /app/zep.yaml
+
+    rm /app/zep.yaml.template
 else
     echo "zep.yaml template not found! Exiting."
     exit 1
 fi
 
-echo "----- Generated config.yaml -----"
-cat /app/config.yaml
-echo "---------------------------------"
+echo "----- Generated /app/zep.yaml -----"
+cat /app/zep.yaml
+echo "-----------------------------------"
 
-# Unset any legacy DSN variable to ensure only explicit fields are used.
-unset ZEP_STORE_POSTGRES_DSN
-
-exec /app/zep --config /app/config.yaml
+exec /app/zep --config /app/zep.yaml
+#sleep 99999

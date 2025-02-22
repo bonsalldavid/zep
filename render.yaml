@@ -2,9 +2,10 @@ services:
   - type: web
     name: zep
     autoDeploy: false
-    env: image
-    image:
-      url: db402/zep-custom:latest
+    env: docker
+    plan: free
+#    image:
+#      url: db402/zep-custom:latest
     healthCheckPath: /healthz
     envVars:
       - key: PORT
@@ -12,21 +13,73 @@ services:
       - key: ZEP_SERVER_WEB_ENABLED
         value: "false"
       # These sensitive variables must be set in Render’s dashboard (using secret management)
-      - key: POSTGRES_USER
-        sync: false
-      - key: POSTGRES_PASSWORD
-        sync: false
-      # For internal connectivity, set POSTGRES_HOST to "db"
       - key: POSTGRES_HOST
-        value: "db"
+        fromDatabase:
+          name: zep-postgres
+          property: host
+      - key: POSTGRES_DATABASE
+        fromDatabase:
+          name: zep-postgres
+          property: databaseName
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: zep-postgres
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: zep-postgres
+          property: password
       - key: POSTGRES_PORT
         value: "5432"
-      - key: POSTGRES_DATABASE
-        sync: false
+
       - key: ZEP_API_SECRET
         sync: false
       - key: ZEP_OPENAI_API_KEY
         sync: false
+
+      - key: GRAPHITI_HOST
+          value: graphiti
+
+      - key: GRAPHITI_PORT
+        value: "8003"
+      - key: NEO4J_HOST
+        value: neo4j
+      - key: NEO4J_PORT
+        value: "7687" 
+
+
+
+  # 2) Graphiti as a private service, pulling a prebuilt image
+  - name: graphiti
+    type: pserv
+    env: image
+    autoDeploy: false
+    image:
+      # The official Graphiti image from Docker Hub or GHCR:
+      url: zepai/graphiti:0.3
+    envVars:
+      # If Graphiti needs an OpenAI key or other secrets:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: MODEL_NAME
+        value: "gpt-4o-mini"
+
+
+  # 3) Neo4j Private Service
+  - name: neo4j
+    type: pserv
+    env: image
+    autoDeploy: false
+    image:
+      url: neo4j:5.22.0
+    envVars:
+      - key: NEO4J_AUTH
+        sync: false
+        value: "neo4j/zepzepzep"
+    serviceDetails:
+      ports:
+        - port: 7474
+        - port: 7687
 
   - type: pserv
     name: db
@@ -64,13 +117,3 @@ services:
         sync: false
       - key: PORT
         value: "8003"
-
-  - type: pserv
-    name: neo4j
-    autoDeploy: false
-    env: image
-    image:
-      url: neo4j:5.22.0
-    envVars:
-      - key: NEO4J_AUTH
-        sync: false

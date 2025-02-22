@@ -6,11 +6,11 @@ http:
   port: 8000
   max_request_size: 5242880
 postgres:
-   user: "${POSTGRES_USER}"
-   password: "${POSTGRES_PASSWORD}"
-   host: "${POSTGRES_HOST}"
+   user: $POSTGRES_USER
+   password: $POSTGRES_PASSWORD
+   host: $POSTGRES_HOST
    port: 5432
-   database: "${POSTGRES_DATABASE}"
+   database: $POSTGRES_DATABASE
    schema_name: public
    read_timeout: 30
    write_timeout: 30
@@ -57,7 +57,7 @@ extractors:
 auth:
   required: true
   secret: "do-not-use-this-secret-in-production"
-api_secret: "${ZEP_API_SECRET}"
+api_secret: $ZEP_API_SECRET
 data:
   purge_every: 60
 opentelemetry:
