@@ -42,7 +42,7 @@ services:
 
   # 2) Graphiti Private Service
   - name: graphiti
-    type: privateService
+    type: pserv
     env: docker
     image:
       url: zepai/graphiti:0.3
@@ -62,7 +62,7 @@ services:
 
   # 3) Neo4j Private Service
   - name: neo4j
-    type: privateService
+    type: pserv
     env: docker
     image:
       url: neo4j:5.22.0
