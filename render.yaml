@@ -5,8 +5,6 @@ services:
     image:
       url: db402/zep-custom:latest
     autoDeploy: false
-    build:
-      dockerfilePath: Dockerfile.ce
     healthCheckPath: /healthz
     envVars:
       - key: ZEP_CONFIG_FILE
