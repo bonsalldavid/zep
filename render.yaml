@@ -1,3 +1,4 @@
+# render.yaml
 services:
   # 1) Zep Public Web Service
   - name: zep
@@ -10,33 +11,33 @@ services:
     healthCheckPath: /healthz
     envVars:
       - key: POSTGRES_HOST
-        sync: false
+        value: ""
       - key: POSTGRES_DATABASE
-        sync: false
+        value: ""
       - key: POSTGRES_USER
-        sync: false
+        value: ""
       - key: POSTGRES_PASSWORD
-        sync: false
+        value: ""
       - key: POSTGRES_PORT
         value: "5432"
 
       # Zep application config
       - key: ZEP_API_SECRET
-        sync: false
+        value: ""
       - key: ZEP_OPENAI_API_KEY
-        sync: false
+        value: ""
       - key: ZEP_SERVER_WEB_ENABLED
-        sync: false
+        value: "true"
 
       # Internal service references
       - key: GRAPHITI_HOST
-        sync: false
+        value: "graphiti"
       - key: GRAPHITI_PORT
-        value: 8003
+        value: "8003"
       - key: NEO4J_HOST
-        sync: false
+        value: "neo4j"
       - key: NEO4J_PORT
-        value: 7687
+        value: "7687"
 
   # 2) Graphiti Private Service
   - name: graphiti
@@ -49,13 +50,13 @@ services:
     # Remove "ports" field; the container’s internal port (8003) is used for internal communication.
     envVars:
       - key: OPENAI_API_KEY
-        sync: false
+        value: ""
       - key: MODEL_NAME
         value: "gpt-4o-mini"
       - key: NEO4J_HOST
-        sync: false
+        value: "neo4j"
       - key: NEO4J_PORT
-        value: 7687
+        value: "7687"
 
   # 3) Neo4j Private Service
   - name: neo4j
@@ -68,7 +69,7 @@ services:
     # Remove "ports" field; internal connectivity will use the container’s native ports.
     envVars:
       - key: NEO4J_AUTH
-        sync: false
+        value: "neo4j/zepzepzep"
 
 databases:
   # 4) Managed PostgreSQL Database
