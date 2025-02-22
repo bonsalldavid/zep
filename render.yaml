@@ -11,7 +11,7 @@ services:
         value: "8000"
       - key: ZEP_STORE_POSTGRES_DSN
         fromDatabase:
-          name: zep-postgres
+          name: zep-postgres-dy76
           property: connectionString
       - key: GRAPHITI_HOSTPORT
         fromService:
