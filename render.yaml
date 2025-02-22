@@ -1,47 +1,38 @@
 # render.yaml
 services:
-  # 1) Zep Public Web Service (built from your custom Docker image)
+  # 1) Zep Public Web Service
   - name: zep
     type: web
     env: docker
-    # If you rely on the Dockerfile's ENTRYPOINT, you generally don't need a separate startCommand.
     image:
       url: db402/zep-custom:latest
-    plan: free  # or starter, or whatever tier you need
+    plan: free              # or "starter"/"standard", etc.
     autoDeploy: false
     healthCheckPath: /healthz
     envVars:
-      # Map environment variables from your Managed PostgreSQL instance
+      # These can be replaced by direct references or removed if you supply them in the dashboard
       - key: POSTGRES_HOST
-        fromDatabase:
-          name: zep-postgres
-          property: host
+        value: ""
       - key: POSTGRES_DATABASE
-        fromDatabase:
-          name: zep-postgres
-          property: databaseName
+        value: ""
       - key: POSTGRES_USER
-        fromDatabase:
-          name: zep-postgres
-          property: user
+        value: ""
       - key: POSTGRES_PASSWORD
-        fromDatabase:
-          name: zep-postgres
-          property: password
+        value: ""
       - key: POSTGRES_PORT
         value: "5432"
-      # Sync false for secrets you don’t want in Render’s UI logs
+
+      # Example placeholders for any app config
       - key: ZEP_API_SECRET
-        sync: false
-        value: "blahblahblah"
+        value: ""
       - key: ZEP_OPENAI_API_KEY
-        sync: false
-        value: "sk-XXXX"
+        value: ""
       - key: ZEP_SERVER_WEB_ENABLED
         value: "true"
-      # Additional environment variables your application might use
+
+      # Graphiti / Neo4j internal references (override if needed)
       - key: GRAPHITI_HOST
-        value: "graphiti"     # references the private service name
+        value: "graphiti"
       - key: GRAPHITI_PORT
         value: "8003"
       - key: NEO4J_HOST
@@ -51,20 +42,17 @@ services:
 
   # 2) Graphiti Private Service
   - name: graphiti
-    type: pserv
+    type: privateService
     env: docker
     image:
       url: zepai/graphiti:0.3
     plan: free
     autoDeploy: false
-    # If Graphiti has a simple GET-based health check, specify it here:
-    #   healthCheckPath: /healthcheck
     ports:
-      - 8003
+      - containerPort: 8003
     envVars:
       - key: OPENAI_API_KEY
-        sync: false
-        value: "sk-XXXX"
+        value: ""
       - key: MODEL_NAME
         value: "gpt-4o-mini"
       - key: NEO4J_HOST
@@ -74,21 +62,17 @@ services:
 
   # 3) Neo4j Private Service
   - name: neo4j
-    type: pserv
+    type: privateService
     env: docker
     image:
       url: neo4j:5.22.0
     plan: free
     autoDeploy: false
     ports:
-      - 7474
-      - 7687
-    # If you want a built-in health check, you can do:
-    # healthCheckPath: /  (only if the container responds on HTTP)
-    # Or override with a custom script or approach
+      - containerPort: 7474
+      - containerPort: 7687
     envVars:
       - key: NEO4J_AUTH
-        sync: false
         value: "neo4j/zepzepzep"
 
 databases:
