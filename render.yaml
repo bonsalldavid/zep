@@ -1,18 +1,16 @@
 services:
-  - type: web
-    name: zep
-    autoDeploy: false
+  # 1) Zep Public Web Service (built from your Dockerfile)
+  - name: zep
+    type: web
     env: docker
     plan: free
-#    image:
-#      url: db402/zep-custom:latest
+    autoDeploy: false
+    build:
+      dockerfilePath: Dockerfile.ce
     healthCheckPath: /healthz
     envVars:
-      - key: PORT
-        value: "8000"
-      - key: ZEP_SERVER_WEB_ENABLED
-        value: "false"
-      # These sensitive variables must be set in Render’s dashboard (using secret management)
+      - key: ZEP_CONFIG_FILE
+        value: zep.yaml
       - key: POSTGRES_HOST
         fromDatabase:
           name: zep-postgres
@@ -31,39 +29,43 @@ services:
           property: password
       - key: POSTGRES_PORT
         value: "5432"
-
       - key: ZEP_API_SECRET
         sync: false
+        value: "blahblahblah"
       - key: ZEP_OPENAI_API_KEY
         sync: false
-
+        value: "sk-XXXX"
+      - key: ZEP_SERVER_WEB_ENABLED
+        value: "true"
+      # Internal endpoints for Graphiti and Neo4j
       - key: GRAPHITI_HOST
         value: graphiti
-
       - key: GRAPHITI_PORT
         value: "8003"
       - key: NEO4J_HOST
         value: neo4j
       - key: NEO4J_PORT
-        value: "7687" 
+        value: "7687"
 
-
-
-  # 2) Graphiti as a private service, pulling a prebuilt image
+  # 2) Graphiti Private Service
   - name: graphiti
     type: pserv
     env: image
     autoDeploy: false
     image:
-      # The official Graphiti image from Docker Hub or GHCR:
       url: zepai/graphiti:0.3
+    ports:
+      - 8003
     envVars:
-      # If Graphiti needs an OpenAI key or other secrets:
       - key: OPENAI_API_KEY
         sync: false
+        value: "sk-XXXX"
       - key: MODEL_NAME
         value: "gpt-4o-mini"
-
+      - key: NEO4J_HOST
+        value: neo4j
+      - key: NEO4J_PORT
+        value: "7687"
 
   # 3) Neo4j Private Service
   - name: neo4j
@@ -76,44 +78,13 @@ services:
       - key: NEO4J_AUTH
         sync: false
         value: "neo4j/zepzepzep"
-    serviceDetails:
-      ports:
-        - port: 7474
-        - port: 7687
+    ports:
+      - 7474
+      - 7687
 
-  - type: pserv
-    name: db
-    autoDeploy: false
-    env: image
-    image:
-      url: ankane/pgvector:v0.5.1
-    envVars:
-      # Use the same database credentials for the db service
-      - key: POSTGRES_USER
-        sync: false
-      - key: POSTGRES_PASSWORD
-        sync: false
-      - key: POSTGRES_DATABASE
-        sync: false
-    # (Note: db is a private service; no health check path is allowed)
-
-  - type: pserv
-    name: graphiti
-    autoDeploy: false
-    env: image
-    image:
-      url: zepai/graphiti:0.3
-    envVars:
-      - key: OPENAI_API_KEY
-        sync: false
-      - key: MODEL_NAME
-        value: "gpt-4o-mini"
-      - key: NEO4J_URI
-        # This will resolve to the neo4j service on the same network.
-        value: "bolt://neo4j:7687"
-      - key: NEO4J_USER
-        sync: false
-      - key: NEO4J_PASSWORD
-        sync: false
-      - key: PORT
-        value: "8003"
+databases:
+  # 4) Managed PostgreSQL Database
+  - name: zep-postgres
+    databaseName: zep
+    postgresMajorVersion: 15
+    ipAllowList: []
