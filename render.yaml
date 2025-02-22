@@ -2,8 +2,8 @@ services:
   # 1) Zep Public Web Service (built from your Dockerfile)
   - name: zep
     type: web
-    env: docker
-    plan: free
+    image:
+      url: db402/zep-custom:latest
     autoDeploy: false
     build:
       dockerfilePath: Dockerfile.ce
