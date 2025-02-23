@@ -47,7 +47,6 @@ services:
     disks:
       - name: neo4j_data
         mountPath: /data
-        sizeGB: 10
 
 databases:
   - name: zep-postgres
