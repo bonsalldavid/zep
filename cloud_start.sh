@@ -18,7 +18,7 @@ if [ -f /app/zep.yaml ]; then
 #    mv /app/zep.yaml /app/zep.yaml.template
 
     # 2) Perform env substitution on the template
-    envsubst '$POSTGRES_USER $POSTGRES_PASSWORD $POSTGRES_HOST $POSTGRES_PORT $POSTGRES_DATABASE $ZEP_API_SECRET $ZEP_SERVER_WEB_ENABLED $ZEP_OPENAI_API_KEY' \
+    envsubst '$ZEP_AUTH_SECRET $POSTGRES_USER $POSTGRES_PASSWORD $POSTGRES_HOST $POSTGRES_PORT $POSTGRES_DATABASE $ZEP_API_SECRET $ZEP_SERVER_WEB_ENABLED $ZEP_OPENAI_API_KEY' \
       < /app/zep.yaml > /app/zep.yaml.tmp
     mv /app/zep.yaml.tmp /app/zep.yaml
 
