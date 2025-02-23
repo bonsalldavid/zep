@@ -44,7 +44,7 @@ services:
     env: image
     image:
       url: neo4j:5.22.0
-    disks:
+    mounts:
       - name: neo4j_data
         mountPath: /data
 
