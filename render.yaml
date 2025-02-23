@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: zep6-dy76
+    name: zep6
     autoDeploy: false
     env: image
     image:
