@@ -56,7 +56,7 @@ extractors:
       service: "local"
 auth:
   required: true
-  secret: "do-not-use-this-secret-in-production"
+  secret: $ZEP_AUTH_SECRET
 api_secret: $ZEP_API_SECRET
 data:
   purge_every: 60
