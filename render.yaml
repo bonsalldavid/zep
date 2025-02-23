@@ -44,9 +44,6 @@ services:
     env: image
     image:
       url: neo4j:5.22.0
-    mounts:
-      - name: neo4j_data
-        mountPath: /data
 
 databases:
   - name: zep-postgres
