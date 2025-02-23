@@ -18,7 +18,7 @@ postgres:
 carbon:
   locale: en
 graphiti:
-  service_url: "http://graphiti:8003"
+  service_url: "http://$GRAPHITI_HOSTPORT"
 llm:
   service: "openai"
   model: "gpt-4o-mini"
