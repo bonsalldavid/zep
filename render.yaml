@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: zep6
+    name: zep6-dy76
     autoDeploy: false
     env: image
     image:
@@ -15,24 +15,24 @@ services:
           property: connectionString
       - key: GRAPHITI_HOSTPORT
         fromService:
-          name: graphiti
+          name: graphiti-dy76
           type: pserv
           property: hostport
       - key: NEO4J_HOSTPORT
         fromService:
-          name: neo4j
+          name: neo4j-dy76
           type: pserv
           property: hostport
       - key: ZEP_API_SECRET
-        value: ""
+        sync: false
       - key: ZEP_OPENAI_API_KEY
         sync: false
       - key: ZEP_SERVER_WEB_ENABLED
-        value: "true"
+        sync: false
 
 
   - type: pserv
-    name: graphiti
+    name: graphiti-dy76
     autoDeploy: false
     env: image
     image:
@@ -46,7 +46,7 @@ services:
       url: neo4j:5.22.0
 
 databases:
-  - name: zep-postgres
+  - name: zep-postgres-dy76
     databaseName: zep
     postgresMajorVersion: 16
     ipAllowList: []
